@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.work.dao.WxUserDao">
+	<!--  
+	<select id="getChannelConfigByAppidAndSecret" parameterType="hashmap" resultType="cn.sh.ideal.model.ChannelConfig">
+		SELECT 	ID id, 
+	CHANNEL_CODE channelCode, 
+	CHANNEL_ACCOUNT channelAccount, 
+	ACCOUNT_CONFIG accountConfig, 
+	CHANNEL_ENABLE channelEnable, 
+	TENANT tenantCode, 
+	REMARK remark
+	FROM  MGW_TENANT_CHANNEL_CONFIG
+	 WHERE  INSTR(ACCOUNT_CONFIG, #{appid,jdbcType=VARCHAR}) > 0 AND INSTR(ACCOUNT_CONFIG, #{secret,jdbcType=VARCHAR})> 0 
+	 LIMIT 0, 1
+	</select>
+	-->
+	
+	<resultMap id="ResultMap" type="com.work.entity.wx.WxUser" >
+	    <id column="ID" property="id" jdbcType="INTEGER" />
+	    <result column="OPEN_ID" property="openId" jdbcType="VARCHAR" /> 
+	    <result column="USER_NAME" property="userName" jdbcType="VARCHAR" />
+	    <result column="REAL_NAME" property="realName" jdbcType="VARCHAR" />
+	    <result column="USER_GROUP" property="userGroup" jdbcType="CHAR" />
+	    <result column="STATUS" property="status" jdbcType="CHAR" />
+	    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+	  </resultMap>
+	
+	<select id="query" parameterType="com.work.entity.wx.WxUser" resultMap="ResultMap">
+		SELECT 	*
+		FROM  WX_USER
+		WHERE  1=1 
+		<if test="id != null" >
+			AND ID = #{id,jdbcType=INTEGER}
+		</if>   
+		<if test="openId != null and openId != ''" >
+			AND OPEN_ID = #{openId,jdbcType=CHAR}
+		</if> 
+		<if test="status != null and status != ''" >
+			AND STATUS = #{status,jdbcType=CHAR}
+		</if>    
+	</select>
+	
+	<insert id="insert" parameterType="com.work.entity.wx.WxUser" >
+		INSERT INTO WX_USER (OPEN_ID, 
+			<if test="userName != null and userName != ''" >
+				USER_NAME,
+			</if> 
+			<if test="realName != null and realName != ''" >
+				REAL_NAME,
+			</if>  
+			USER_GROUP,STATUS,CREATE_TIME
+		)
+		VALUES
+		(
+			#{openId,jdbcType=VARCHAR},
+			<if test="userName != null and userName != ''" >
+				USER_NAME = #{userName,jdbcType=VARCHAR},
+			</if> 
+			<if test="realName != null and realName != ''" >
+				REAL_NAME = #{realName,jdbcType=VARCHAR},
+			</if>  
+			#{userGroup,jdbcType=CHAR},
+			#{status,jdbcType=CHAR},
+			#{createTime,jdbcType=TIMESTAMP}
+		);		
+	</insert>
+	
+	
+	<update id="update" parameterType="com.work.entity.wx.WxUser" >
+    	UPDATE WX_USER
+	    <set >
+	    	<if test="userName != null and userName != ''" >
+				USER_NAME = #{userName,jdbcType=VARCHAR},
+			</if> 
+			<if test="realName != null and realName != ''" >
+				REAL_NAME = #{realName,jdbcType=VARCHAR},
+			</if>  
+			<if test="status != null and status != ''" >
+				STATUS = #{status,jdbcType=CHAR},
+			</if>     
+	    </set>
+	    WHERE ID = #{id,jdbcType=INTEGER}
+  </update>
+	
+	
+</mapper>
